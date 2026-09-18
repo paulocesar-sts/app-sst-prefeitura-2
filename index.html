@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#17365d">
+<title>APP SST • Prefeitura</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#eef3f7;
+  color:#17212b;
+}
+header{
+  background:#17365d;
+  color:white;
+  padding:18px;
+}
+header h1{margin:0;font-size:22px}
+header p{margin:5px 0 0;font-size:13px;opacity:.9}
+
+nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:12px;
+  background:white;
+  border-bottom:1px solid #ccd6df;
+}
+nav button{
+  border:0;
+  border-radius:9px;
+  padding:11px 13px;
+  background:#e7edf3;
+  cursor:pointer;
+  font-weight:bold;
+}
+nav button:hover{background:#d5e0ea}
+
+main{
+  max-width:1100px;
+  margin:auto;
+  padding:18px;
+}
+
+.page{display:none}
+.page.active{display:block}
+
+.card{
+  background:white;
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:15px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:14px;
+}
+
+.dashboard-card{
+  background:white;
+  border-radius:14px;
+  padding:20px;
+  cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.dashboard-card h3{margin:8px 0}
+.dashboard-card p{margin:0;color:#687684;font-size:13px}
+
+label{
+  display:block;
+  font-weight:bold;
+  margin:12px 0 6px;
+}
+input,select,textarea{
+  width:100%;
+  padding:11px;
+  border:1px solid #b9c5d0;
+  border-radius:8px;
+  font-size:15px;
+}
+textarea{min-height:100px;resize:vertical}
+
+button.primary{
+  background:#17365d;
+  color:white;
+  border:0;
+  border-radius:9px;
+  padding:12px 17px;
+  font-weight:bold;
+  cursor:pointer;
+}
+button.secondary{
+  background:#e7edf3;
+  border:0;
+  border-radius:9px;
+  padding:11px 15px;
+  cursor:pointer;
+}
+button.danger{
+  background:#a52b2b;
+  color:white;
+  border:0;
+  border-radius:9px;
+  padding:10px 13px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:15px;
+}
+
+.photo-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+  gap:12px;
+  margin-top:12px;
+}
+.photo-card{
+  border:1px solid #d0d8df;
+  border-radius:10px;
+  padding:8px;
+  background:#f8fafc;
+}
+.photo-card img{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+  border-radius:7px;
+}
+.photo-card button{width:100%;margin-top:7px}
+
+.result{
+  padding:15px;
+  border-radius:10px;
+  background:#eef5fb;
+  border-left:5px solid #17365d;
+  margin-top:15px;
+}
+.warning{
+  background:#fff5d6;
+  border-left:5px solid #d99b00;
+}
+.success{
+  background:#e5f6e9;
+  border-left:5px solid #24833d;
+}
+
+.item{
+  border:1px solid #d5dde5;
+  border-radius:10px;
+  padding:13px;
+  margin:9px 0;
+  background:#fafcfd;
+}
+.item h3{margin:0 0 6px}
+.small{font-size:12px;color:#687684}
+
+.stat{
+  text-align:center;
+  padding:15px;
+  border-radius:12px;
+  background:#f1f5f8;
+}
+.stat strong{
+  display:block;
+  font-size:28px;
+  color:#17365d;
+}
+
+@media(max-width:600px){
+  main{padding:10px}
+  nav button{flex:1 1 45%}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🦺 APP SST • Prefeitura</h1>
+  <p>Assistente de campo — Segurança do Trabalho</p>
+</header>
+
+<nav>
+  <button onclick="go('inicio')">🏠 Início</button>
+  <button onclick="go('visitas')">📸 Visitas</button>
+  <button onclick="go('acidentes')">🚨 Acidentes</button>
+  <button onclick="go('inspecoes')">🔎 Inspeções</button>
+  <button onclick="go('funcionarios')">👨‍🔧 Funcionários</button>
+  <button onclick="go('epis')">🦺 EPIs</button>
+  <button onclick="go('dds')">📝 DDS</button>
+  <button onclick="go('pendencias')">📋 Pendências</button>
+  <button onclick="go('relatorio')">📄 Relatório diário</button>
+  <button onclick="backup()">💾 Backup</button>
+</nav>
+
+<main>
+
+<section id="inicio" class="page active">
+
+<div class="card">
+<h2>👤 Painel do Técnico</h2>
+<p>Registre e acompanhe as atividades de Segurança do Trabalho.</p>
+</div>
+
+<div class="grid">
+
+<div class="dashboard-card" onclick="go('visitas')">
+<h3>📸 Visitas técnicas</h3>
+<p>Registre visitas com várias fotos.</p>
+</div>
+
+<div class="dashboard-card" onclick="go('acidentes')">
+<h3>🚨 Acidentes de Trabalho</h3>
+<p>Investigação e análise preliminar.</p>
+</div>
+
+<div class="dashboard-card" onclick="go('inspecoes')">
+<h3>🔎 Inspeções</h3>
+<p>Registre inspeções e irregularidades.</p>
+</div>
+
+<div class="dashboard-card" onclick="go('funcionarios')">
+<h3>👨‍🔧 Funcionários</h3>
+<p>Cadastro básico dos servidores.</p>
+</div>
+
+<div class="dashboard-card" onclick="go('epis')">
+<h3>🦺 EPIs</h3>
+<p>Controle de entrega de equipamentos.</p>
+</div>
+
+<div class="dashboard-card" onclick="go('dds')">
+<h3>📝 DDS</h3>
+<p>Registre temas e participantes.</p>
+</div>
+
+<div class="dashboard-card" onclick="go('pendencias')">
+<h3>📋 Pendências</h3>
+<p>Ações, responsáveis e prazos.</p>
+</div>
+
+<div class="dashboard-card" onclick="go('relatorio')">
+<h3>📄 Relatório diário</h3>
+<p>Organize suas atividades.</p>
+</div>
+
+</div>
+
+<div class="card">
+<div class="grid">
+<div class="stat">
+<strong id="nVisitas">0</strong>
+Visitas
+</div>
+<div class="stat">
+<strong id="nAcidentes">0</strong>
+Acidentes
+</div>
+<div class="stat">
+<strong id="nInspecoes">0</strong>
+Inspeções
+</div>
+<div class="stat">
+<strong id="nFuncionarios">0</strong>
+Funcionários
+</div>
+</div>
+</div>
+
+</section>
+
+
+<section id="visitas" class="page">
+
+<div class="card">
+<h2>📸 Nova visita técnica</h2>
+
+<form id="formVisita">
+
+<label>Local / unidade</label>
+<input id="vLocal" required>
+
+<label>Setor</label>
+<input id="vSetor">
+
+<label>Data</label>
+<input id="vData" type="date" required>
+
+<label>Situação encontrada</label>
+<textarea id="vSituacao" required></textarea>
+
+<label>Prioridade</label>
+<select id="vPrior">
+<option>Baixa</option>
+<option selected>Média</option>
+<option>Alta</option>
+<option>Crítica</option>
+</select>
+
+<label>Ação recomendada</label>
+<textarea id="vAcao"></textarea>
+
+<label>Responsável</label>
+<input id="vResp">
+
+<label>Prazo</label>
+<input id="vPrazo" type="date">
+
+<label>Status</label>
+<select id="vStatus">
+<option>Aberta</option>
+<option>Em andamento</option>
+<option>Concluída</option>
+</select>
+
+<label>📷 Fotografias da visita</label>
+<input id="vFotos" type="file" accept="image/*" multiple capture="environment">
+
+<div id="previewFotos" class="photo-grid"></div>
+
+<div class="actions">
+<button class="primary" type="submit">💾 Salvar visita</button>
+<button class="danger" type="button" onclick="limparFotos()">🗑️ Limpar fotos</button>
+</div>
+
+</form>
+</div>
+
+<div class="card">
+<h2>Visitas registradas</h2>
+<div id="listaVisitas"></div>
+</div>
+
+</section>
+
+
+<section id="acidentes" class="page">
+
+<div class="card">
+<h2>🚨 Relatório de Acidente de Trabalho</h2>
+
+<p>
+Preencha as informações do acidente. O sistema fará uma
+<strong>análise preliminar automática</strong> para sua conferência.
+</p>
+
+<form id="formAcidente">
+
+<label>Servidor acidentado</label>
+<input id="aServidor" required>
+
+<label>Matrícula</label>
+<input id="aMatricula">
+
+<label>CPF</label>
+<input id="aCpf">
+
+<label>Cargo / função</label>
+<input id="aCargo">
+
+<label>Setor / local do acidente</label>
+<input id="aLocal" required>
+
+<div class="grid">
+
+<div>
+<label>Data</label>
+<input id="aData" type="date" required>
+</div>
+
+<div>
+<label>Hora</label>
+<input id="aHora" type="time">
+</div>
+
+</div>
+
+<label>Tipo de acidente</label>
+<select id="aTipo">
+<option>Não definido — analisar</option>
+<option>Acidente típico</option>
+<option>Acidente de trajeto</option>
+</select>
+
+<label>Como aconteceu?</label>
+<textarea id="aDescricao" required
+placeholder="Descreva detalhadamente o que aconteceu."></textarea>
+
+<label>Agente causador informado</label>
+<input id="aAgente" placeholder="Ex.: piche quente, máquina, ferramenta, queda...">
+
+<label>Parte do corpo atingida</label>
+<input id="aParte" placeholder="Ex.: mão, braço, punho, perna...">
+
+<label>Lesão / diagnóstico informado</label>
+<input id="aLesao" placeholder="Ex.: queimadura, corte, contusão...">
+
+<label>Houve afastamento?</label>
+<select id="aAfastamento">
+<option>Não informado</option>
+<option>Não</option>
+<option>Sim</option>
+</select>
+
+<label>Dias de afastamento</label>
+<input id="aDias" type="number" min="0">
+
+<label>CRM do médico</label>
+<input id="aCrm">
+
+<label>CID informado</label>
+<input id="aCid">
+
+<label>EPI utilizado</label>
+<input id="aEpi">
+
+<label>Testemunhas</label>
+<textarea id="aTestemunhas"></textarea>
+
+<label>Providências adotadas</label>
+<textarea id="aProvidencias"></textarea>
+
+<label>📷 Fotografias do acidente</label>
+<input id="aFotos" type="file" accept="image/*" multiple capture="environment">
+
+<div id="previewAcidente" class="photo-grid"></div>
+
+<div class="actions">
+<button type="button" class="primary" onclick="analisarAcidente()">
+🤖 Analisar acidente
+</button>
+<button type="button" class="secondary" onclick="limparFotosAcidente()">
+🗑️ Limpar fotos
+</button>
+</div>
+
+</form>
+
+<div id="analiseAcidente"></div>
+
+</div>
+
+<div class="card">
+<h2>Acidentes registrados</h2>
+<div id="listaAcidentes"></div>
+</div>
+
+</section>
+
+
+<section id="inspecoes" class="page">
+
+<div class="card">
+<h2>🔎 Inspeção</h2>
+
+<form id="formInspecao">
+
+<label>Área / setor</label>
+<input id="iArea" required>
+
+<label>Data</label>
+<input id="iData" type="date" required>
+
+<label>Item verificado</label>
+<input id="iItem" required>
+
+<label>Condição encontrada</label>
+<select id="iCondicao">
+<option>Conforme</option>
+<option>Não conforme</option>
+<option>Não se aplica</option>
+</select>
+
+<label>Observação</label>
+<textarea id="iObs"></textarea>
+
+<div class="actions">
+<button class="primary">💾 Salvar inspeção</button>
+</div>
+
+</form>
+</div>
+
+<div class="card">
+<h2>Inspeções registradas</h2>
+<div id="listaInspecoes"></div>
+</div>
+
+</section>
+
+
+<section id="funcionarios" class="page">
+
+<div class="card">
+<h2>👨‍🔧 Cadastro de funcionário</h2>
+
+<form id="formFuncionario">
+
+<label>Nome</label>
+<input id="fNome" required>
+
+<label>Matrícula</label>
+<input id="fMatricula">
+
+<label>CPF</label>
+<input id="fCpf">
+
+<label>Cargo / função</label>
+<input id="fCargo">
+
+<label>Setor</label>
+<input id="fSetor">
+
+<div class="actions">
+<button class="primary">💾 Cadastrar</button>
+</div>
+
+</form>
+</div>
+
+<div class="card">
+<h2>Funcionários cadastrados</h2>
+<div id="listaFuncionarios"></div>
+</div>
+
+</section>
+
+
+<section id="epis" class="page">
+
+<div class="card">
+<h2>🦺 Controle de EPI</h2>
+
+<form id="formEpi">
+
+<label>Funcionário</label>
+<input id="eFuncionario" required>
+
+<label>EPI</label>
+<input id="eEpi" required>
+
+<label>CA</label>
+<input id="eCa">
+
+<label>Quantidade</label>
+<input id="eQtd" type="number" min="1" value="1">
+
+<label>Data de entrega</label>
+<input id="eData" type="date" required>
+
+<label>Observação</label>
+<textarea id="eObs"></textarea>
+
+<div class="actions">
+<button class="primary">💾 Registrar entrega</button>
+</div>
+
+</form>
+</div>
+
+<div class="card">
+<h2>Histórico de EPIs</h2>
+<div id="listaEpis"></div>
+</div>
+
+</section>
+
+
+<section id="dds" class="page">
+
+<div class="card">
+<h2>📝 DDS</h2>
+
+<form id="formDds">
+
+<label>Data</label>
+<input id="dData" type="date" required>
+
+<label>Tema</label>
+<input id="dTema" required>
+
+<label>Conteúdo</label>
+<textarea id="dConteudo" required></textarea>
+
+<label>Participantes</label>
+<textarea id="dParticipantes"
+placeholder="Digite um servidor por linha."></textarea>
+
+<div class="actions">
+<button class="primary">💾 Salvar DDS</button>
+</div>
+
+</form>
+</div>
+
+<div class="card">
+<h2>DDS registrados</h2>
+<div id="listaDds"></div>
+</div>
+
+</section>
+
+
+<section id="pendencias" class="page">
+
+<div class="card">
+<h2>📋 Pendências</h2>
+
+<form id="formPendencia">
+
+<label>Descrição</label>
+<textarea id="pDescricao" required></textarea>
+
+<label>Responsável</label>
+<input id="pResponsavel">
+
+<label>Prazo</label>
+<input id="pPrazo" type="date">
+
+<label>Status</label>
+<select id="pStatus">
+<option>Aberta</option>
+<option>Em andamento</option>
+<option>Concluída</option>
+</select>
+
+<div class="actions">
+<button class="primary">💾 Salvar pendência</button>
+</div>
+
+</form>
+</div>
+
+<div class="card">
+<h2>Pendências registradas</h2>
+<div id="listaPendencias"></div>
+</div>
+
+</section>
+
+
+<section id="relatorio" class="page">
+
+<div class="card">
+<h2>📄 Relatório diário</h2>
+
+<label>Data</label>
+<input id="rData" type="date">
+
+<label>Atividades realizadas</label>
+<textarea id="rAtividades"
+placeholder="Descreva as atividades realizadas durante o dia."></textarea>
+
+<div class="actions">
+<button class="primary" onclick="imprimirRelatorio()">🖨️ Imprimir / PDF</button>
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+<script>
+
+const STORAGE_KEY = "app_sst_prefeitura_2_v1";
+
+let db = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+db.visitas = db.visitas || [];
+db.acidentes = db.acidentes || [];
+db.inspecoes = db.inspecoes || [];
+db.funcionarios = db.funcionarios || [];
+db.epis = db.epis || [];
+db.dds = db.dds || [];
+db.pendencias = db.pendencias || [];
+
+let fotosVisita = [];
+let fotosAcidente = [];
+let ultimaAnalise = null;
+
+function $(id){
+  return document.getElementById(id);
+}
+
+function salvar(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+  atualizarPainel();
+}
+
+function hoje(){
+  return new Date().toISOString().slice(0,10);
+}
+
+$("vData").value = hoje();
+$("aData").value = hoje();
+$("iData").value = hoje();
+$("eData").value = hoje();
+$("dData").value = hoje();
+$("pPrazo").value = hoje();
+$("rData").value = hoje();
+
+function go(id){
+  document.querySelectorAll(".page").forEach(p => {
+    p.classList.remove("active");
+  });
+
+  const pagina = $(id);
+
+  if(pagina){
+    pagina.classList.add("active");
+    window.scrollTo(0,0);
+  }
+
+  atualizarListas();
+}
+
+function atualizarPainel(){
+  $("nVisitas").textContent = db.visitas.length;
+  $("nAcidentes").textContent = db.acidentes.length;
+  $("nInspecoes").textContent = db.inspecoes.length;
+  $("nFuncionarios").textContent = db.funcionarios.length;
+}
+
+
+/* =========================
+   FOTOS
+========================= */
+
+function arquivoParaDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+  });
+}
+
+$("vFotos").addEventListener("change", async function(){
+
+  for(const file of Array.from(this.files)){
+
+    try{
+      const data = await arquivoParaDataURL(file);
+      fotosVisita.push(data);
+    }catch(e){}
+  }
+
+  this.value = "";
+  renderFotosVisita();
+});
+
+function renderFotosVisita(){
+
+  $("previewFotos").innerHTML = fotosVisita.map((foto,index)=>`
+
+    <div class="photo-card">
+
+      <img src="${foto}" alt="Foto ${index+1}">
+
+      <button type="button"
+        class="danger"
+        onclick="excluirFotoVisita(${index})">
+        🗑️ Excluir
+      </button>
+
+    </div>
+
+  `).join("");
+}
+
+function excluirFotoVisita(index){
+  fotosVisita.splice(index,1);
+  renderFotosVisita();
+}
+
+function limparFotos(){
+  fotosVisita = [];
+  $("vFotos").value = "";
+  renderFotosVisita();
+}
+
+
+$("aFotos").addEventListener("change", async function(){
+
+  for(const file of Array.from(this.files)){
+
+    try{
+      const data = await arquivoParaDataURL(file);
+      fotosAcidente.push(data);
+    }catch(e){}
+  }
+
+  this.value = "";
+  renderFotosAcidente();
+});
+
+function renderFotosAcidente(){
+
+  $("previewAcidente").innerHTML = fotosAcidente.map((foto,index)=>`
+
+    <div class="photo-card">
+
+      <img src="${foto}" alt="Foto do acidente ${index+1}">
+
+      <button type="button"
+        class="danger"
+        onclick="excluirFotoAcidente(${index})">
+        🗑️ Excluir
+      </button>
+
+    </div>
+
+  `).join("");
+}
+
+function excluirFotoAcidente(index){
+  fotosAcidente.splice(index,1);
+  renderFotosAcidente();
+}
+
+function limparFotosAcidente(){
+  fotosAcidente = [];
+  $("aFotos").value = "";
+  renderFotosAcidente();
+}
+
+
+/* =========================
+   VISITAS
+========================= */
+
+$("formVisita").addEventListener("submit", function(e){
+
+  e.preventDefault();
+
+  db.visitas.push({
+
+    id: Date.now(),
+
+    local: $("vLocal").value,
+    setor: $("vSetor").value,
+    data: $("vData").value,
+    situacao: $("vSituacao").value,
+    prioridade: $("vPrior").value,
+    acao: $("vAcao").value,
+    responsavel: $("vResp").value,
+    prazo: $("vPrazo").value,
+    status: $("vStatus").value,
+
+    fotos: [...fotosVisita]
+
+  });
+
+  salvar();
+
+  this.reset();
+
+  $("vData").value = hoje();
+
+  fotosVisita = [];
+
+  renderFotosVisita();
+
+  alert("Visita técnica salva com sucesso.");
+
+  atualizarListas();
+
+});
+
+
+/* =========================
+   ANÁLISE DE ACIDENTE
+========================= */
+
+function analisarAcidente(){
+
+  const descricao = $("aDescricao").value.trim();
+  const agente = $("aAgente").value.trim();
+  const parte = $("aParte").value.trim();
+  const lesao = $("aLesao").value.trim();
+
+  if(!descricao){
+    alert("Descreva como o acidente aconteceu antes de analisar.");
+    $("aDescricao").focus();
+    return;
+  }
+
+  let tipo = $("aTipo").value;
+
+  if(tipo === "Não definido — analisar"){
+
+    const texto = (
+      descricao + " " +
+      agente + " " +
+      parte + " " +
+      lesao
+    ).toLowerCase();
+
+    if(
+      texto.includes("trajeto") ||
+      texto.includes("casa") ||
+      texto.includes("ônibus") ||
+      texto.includes("carro") ||
+      texto.includes("moto")
+    ){
+      tipo = "Possível acidente de trajeto";
+    }else{
+      tipo = "Possível acidente típico";
+    }
+
+  }
+
+  let agenteSugestao =
+    agente || "Não informado — conferir durante a investigação.";
+
+  let parteSugestao =
+    parte || "Não informada — conferir.";
+
+  let lesaoSugestao =
+    lesao || "Não informada — conferir avaliação médica.";
+
+  let medidas = [];
+
+  if(!lesao){
+    medidas.push("Confirmar diagnóstico/lesão com documentação médica.");
+  }
+
+  if(!agente){
+    medidas.push("Identificar e registrar o agente causador.");
+  }
+
+  if(!parte){
+    medidas.push("Confirmar a parte do corpo atingida.");
+  }
+
+  if(fotosAcidente.length === 0){
+    medidas.push("Avaliar se fotografias do local são necessárias.");
+  }
+
+  medidas.push("Registrar as providências adotadas.");
+  medidas.push("Verificar as condições que contribuíram para o acidente.");
+  medidas.push("Definir medidas corretivas e preventivas.");
+
+  ultimaAnalise = {
+
+    tipo,
+    agente: agenteSugestao,
+    parte: parteSugestao,
+    lesao: lesaoSugestao,
+    medidas
+
+  };
+
+  $("analiseAcidente").innerHTML = `
+
+    <div class="result warning">
+
+      <h3>🤖 ANÁLISE PRELIMINAR</h3>
+
+      <p>
+        <strong>Status:</strong>
+        Aguardando análise e aprovação do Técnico de Segurança.
+      </p>
+
+      <p>
+        <strong>Classificação preliminar:</strong>
+        ${tipo}
+      </p>
+
+      <p>
+        <strong>Agente causador:</strong>
+        ${agenteSugestao}
+      </p>
+
+      <p>
+        <strong>Parte do corpo:</strong>
+        ${parteSugestao}
+      </p>
+
+      <p>
+        <strong>Lesão informada:</strong>
+        ${lesaoSugestao}
+      </p>
+
+      <h4>Medidas para conferência:</h4>
+
+      <ul>
+        ${medidas.map(x=>`<li>${x}</li>`).join("")}
+      </ul>
+
+      <div class="actions">
+
+        <button class="primary"
+          onclick="aprovarAnaliseAcidente()">
+          ✅ APROVAR E SALVAR
+        </button>
+
+        <button class="secondary"
+          onclick="editarAnaliseAcidente()">
+          ✏️ CORRIGIR
+        </button>
+
+      </div>
+
+    </div>
+  `;
+}
+
+function editarAnaliseAcidente(){
+
+  $("aTipo").focus();
+
+  alert(
+    "Faça as correções nos campos acima e clique novamente em 'Analisar acidente'."
+  );
+}
+
+function aprovarAnaliseAcidente(){
+
+  if(!ultimaAnalise){
+    alert("Faça a análise preliminar primeiro.");
+    return;
+  }
+
+  const acidente = {
+
+    id: Date.now(),
+
+    servidor: $("aServidor").value,
+    matricula: $("aMatricula").value,
+    cpf: $("aCpf").value,
+    cargo: $("aCargo").value,
+
+    local: $("aLocal").value,
+    data: $("aData").value,
+    hora: $("aHora").value,
+
+    descricao: $("aDescricao").value,
+
+    tipo: ultimaAnalise.tipo,
+    agente: ultimaAnalise.agente,
+    parte: ultimaAnalise.parte,
+    lesao: ultimaAnalise.lesao,
+
+    afastamento: $("aAfastamento").value,
+    dias: $("aDias").value,
+    crm: $("aCrm").value,
+    cid: $("aCid").value,
+
+    epi: $("aEpi").value,
+    testemunhas: $("aTestemunhas").value,
+    providencias: $("aProvidencias").value,
+
+    medidas: ultimaAnalise.medidas,
+
+    fotos: [...fotosAcidente],
+
+    aprovado: true,
+    dataAprovacao: new Date().toLocaleString("pt-BR")
+
+  };
+
+  db.acidentes.push(acidente);
+
+  salvar();
+
+  alert(
+    "Análise aprovada e acidente registrado com sucesso."
+  );
+
+  $("formAcidente").reset();
+
+  $("aData").value = hoje();
+
+  fotosAcidente = [];
+
+  ultimaAnalise = null;
+
+  $("analiseAcidente").innerHTML = "";
+
+  renderFotosAcidente();
+
+  atualizarListas();
+
+}
+
+
+/* =========================
+   INSPEÇÕES
+========================= */
+
+$("formInspecao").addEventListener("submit", function(e){
+
+  e.preventDefault();
+
+  db.inspecoes.push({
+
+    id: Date.now(),
+
+    area: $("iArea").value,
+    data: $("iData").value,
+    item: $("iItem").value,
+    condicao: $("iCondicao").value,
+    observacao: $("iObs").value
+
+  });
+
+  salvar();
+
+  alert("Inspeção salva.");
+
+  this.reset();
+
+  $("iData").value = hoje();
+
+  atualizarListas();
+
+});
+
+
+/* =========================
+   FUNCIONÁRIOS
+========================= */
+
+$("formFuncionario").addEventListener("submit", function(e){
+
+  e.preventDefault();
+
+  db.funcionarios.push({
+
+    id: Date.now(),
+
+    nome: $("fNome").value,
+    matricula: $("fMatricula").value,
+    cpf: $("fCpf").value,
+    cargo: $("fCargo").value,
+    setor: $("fSetor").value
+
+  });
+
+  salvar();
+
+  alert("Funcionário cadastrado.");
+
+  this.reset();
+
+  atualizarListas();
+
+});
+
+
+/* =========================
+   EPIs
+========================= */
+
+$("formEpi").addEventListener("submit", function(e){
+
+  e.preventDefault();
+
+  db.epis.push({
+
+    id: Date.now(),
+
+    funcionario: $("eFuncionario").value,
+    epi: $("eEpi").value,
+    ca: $("eCa").value,
+    quantidade: $("eQtd").value,
+    data: $("eData").value,
+    observacao: $("eObs").value
+
+  });
+
+  salvar();
+
+  alert("Entrega de EPI registrada.");
+
+  this.reset();
+
+  $("eData").value = hoje();
+
+  atualizarListas();
+
+});
+
+
+/* =========================
+   DDS
+========================= */
+
+$("formDds").addEventListener("submit", function(e){
+
+  e.preventDefault();
+
+  db.dds.push({
+
+    id: Date.now(),
+
+    data: $("dData").value,
+    tema: $("dTema").value,
+    conteudo: $("dConteudo").value,
+    participantes: $("dParticipantes").value
+
+  });
+
+  salvar();
+
+  alert("DDS registrado.");
+
+  this.reset();
+
+  $("dData").value = hoje();
+
+  atualizarListas();
+
+});
+
+
+/* =========================
+   PENDÊNCIAS
+========================= */
+
+$("formPendencia").addEventListener("submit", function(e){
+
+  e.preventDefault();
+
+  db.pendencias.push({
+
+    id: Date.now(),
+
+    descricao: $("pDescricao").value,
+    responsavel: $("pResponsavel").value,
+    prazo: $("pPrazo").value,
+    status: $("pStatus").value
+
+  });
+
+  salvar();
+
+  alert("Pendência registrada.");
+
+  this.reset();
+
+  $("pPrazo").value = hoje();
+
+  atualizarListas();
+
+});
+
+
+/* =========================
+   LISTAGENS
+========================= */
+
+function atualizarListas(){
+
+  $("listaVisitas").innerHTML = db.visitas.length
+  ? db.visitas.map((x,i)=>`
+
+    <div class="item">
+
+      <h3>📸 ${x.local}</h3>
+
+      <div class="small">
+        ${x.data} • ${x.setor || "Setor não informado"}
+      </div>
+
+      <p>${x.situacao}</p>
+
+      <p>
+        <strong>Prioridade:</strong> ${x.prioridade}<br>
+        <strong>Status:</strong> ${x.status}<br>
+        <strong>Fotos:</strong> ${x.fotos.length}
+      </p>
+
+    </div>
+
+  `).join("")
+  : "<p>Nenhuma visita registrada.</p>";
+
+
+  $("listaAcidentes").innerHTML = db.acidentes.length
+  ? db.acidentes.map((x,i)=>`
+
+    <div class="item">
+
+      <h3>🚨 ${x.servidor}</h3>
+
+      <div class="small">
+        ${x.data} ${x.hora || ""}
+      </div>
+
+      <p>
+        <strong>Tipo:</strong> ${x.tipo}<br>
+        <strong>Agente:</strong> ${x.agente}<br>
+        <strong>Parte atingida:</strong> ${x.parte}<br>
+        <strong>Lesão:</strong> ${x.lesao}
+      </p>
+
+      <p>
+        <strong>Status:</strong>
+        ✅ Análise aprovada
+      </p>
+
+      <p>
+        <strong>Fotos:</strong> ${x.fotos.length}
+      </p>
+
+      <button class="secondary"
+        onclick="imprimirAcidente(${x.id})">
+        📄 Imprimir relatório
+      </button>
+
+    </div>
+
+  `).join("")
+  : "<p>Nenhum acidente registrado.</p>";
+
+
+  $("listaInspecoes").innerHTML = db.inspecoes.length
+  ? db.inspecoes.map(x=>`
+
+    <div class="item">
+
+      <h3>🔎 ${x.area}</h3>
+
+      <div class="small">${x.data}</div>
+
+      <p>
+        <strong>Item:</strong> ${x.item}<br>
+        <strong>Condição:</strong> ${x.condicao}
+      </p>
+
+      <p>${x.observacao}</p>
+
+    </div>
+
+  `).join("")
+  : "<p>Nenhuma inspeção registrada.</p>";
+
+
+  $("listaFuncionarios").innerHTML = db.funcionarios.length
+  ? db.funcionarios.map(x=>`
+
+    <div class="item">
+
+      <h3>👨‍🔧 ${x.nome}</h3>
+
+      <p>
+        Matrícula: ${x.matricula || "-"}<br>
+        Cargo: ${x.cargo || "-"}<br>
+        Setor: ${x.setor || "-"}
+      </p>
+
+    </div>
+
+  `).join("")
+  : "<p>Nenhum funcionário cadastrado.</p>";
+
+
+  $("listaEpis").innerHTML = db.epis.length
+  ? db.epis.map(x=>`
+
+    <div class="item">
+
+      <h3>🦺 ${x.epi}</h3>
+
+      <p>
+        <strong>Funcionário:</strong> ${x.funcionario}<br>
+        <strong>CA:</strong> ${x.ca || "-"}<br>
+        <strong>Quantidade:</strong> ${x.quantidade}<br>
+        <strong>Data:</strong> ${x.data}
+      </p>
+
+    </div>
+
+  `).join("")
+  : "<p>Nenhuma entrega registrada.</p>";
+
+
+  $("listaDds").innerHTML = db.dds.length
+  ? db.dds.map(x=>`
+
+    <div class="item">
+
+      <h3>📝 ${x.tema}</h3>
+
+      <div class="small">${x.data}</div>
+
+      <p>${x.conteudo}</p>
+
+      <p>
+        <strong>Participantes:</strong><br>
+        ${(x.participantes || "").replace(/\n/g,"<br>")}
+      </p>
+
+    </div>
+
+  `).join("")
+  : "<p>Nenhum DDS registrado.</p>";
+
+
+  $("listaPendencias").innerHTML = db.pendencias.length
+  ? db.pendencias.map(x=>`
+
+    <div class="item">
+
+      <h3>📋 ${x.descricao}</h3>
+
+      <p>
+        Responsável: ${x.responsavel || "-"}<br>
+        Prazo: ${x.prazo || "-"}<br>
+        Status: ${x.status}
+      </p>
+
+    </div>
+
+  `).join("")
+  : "<p>Nenhuma pendência registrada.</p>";
+
+}
+
+
+function imprimirAcidente(id){
+
+  const x = db.acidentes.find(a => a.id === id);
+
+  if(!x)return;
+
+  const janela = window.open("", "_blank");
+
+  janela.document.write(`
+
+  <html>
+  <head>
+  <title>Relatório de Acidente de Trabalho</title>
+
+  <style>
+  body{
+    font-family:Arial;
+    padding:30px;
+    line-height:1.5;
+  }
+  h1{text-align:center}
+  h2{
+    border-bottom:1px solid #333;
+    padding-bottom:5px;
+  }
+  </style>
+
+  </head>
+
+  <body>
+
+  <h1>RELATÓRIO DE ACIDENTE DE TRABALHO</h1>
+
+  <h2>1. Identificação</h2>
+
+  <p>
+  <strong>Servidor:</strong> ${x.servidor}<br>
+  <strong>Matrícula:</strong> ${x.matricula}<br>
+  <strong>CPF:</strong> ${x.cpf}<br>
+  <strong>Cargo:</strong> ${x.cargo}<br>
+  <strong>Local:</strong> ${x.local}<br>
+  <strong>Data:</strong> ${x.data}<br>
+  <strong>Hora:</strong> ${x.hora}
+  </p>
+
+  <h2>2. Descrição do acidente</h2>
+  <p>${x.descricao}</p>
+
+  <h2>3. Análise preliminar aprovada</h2>
+
+  <p>
+  <strong>Tipo:</strong> ${x.tipo}<br>
+  <strong>Agente causador:</strong> ${x.agente}<br>
+  <strong>Parte do corpo:</strong> ${x.parte}<br>
+  <strong>Lesão:</strong> ${x.lesao}
+  </p>
+
+  <h2>4. Informações médicas</h2>
+
+  <p>
+  <strong>Afastamento:</strong> ${x.afastamento}<br>
+  <strong>Dias:</strong> ${x.dias || 0}<br>
+  <strong>CRM:</strong> ${x.crm}<br>
+  <strong>CID:</strong> ${x.cid}
+  </p>
+
+  <h2>5. EPI</h2>
+  <p>${x.epi}</p>
+
+  <h2>6. Testemunhas</h2>
+  <p>${x.testemunhas}</p>
+
+  <h2>7. Providências adotadas</h2>
+  <p>${x.providencias}</p>
+
+  <h2>8. Medidas corretivas/preventivas sugeridas</h2>
+
+  <ul>
+  ${x.medidas.map(m=>`<li>${m}</li>`).join("")}
+  </ul>
+
+  <h2>9. Aprovação</h2>
+
+  <p>
+  Análise preliminar conferida e aprovada pelo Técnico de Segurança do Trabalho.
+  </p>
+
+  <p>
+  Data da aprovação: ${x.dataAprovacao}
+  </p>
+
+  <br><br>
+
+  ___________________________________________<br>
+  Técnico de Segurança do Trabalho
+
+  <script>
+  window.onload=function(){
+    window.print();
+  }
+  <\/script>
+
+  </body>
+  </html>
+
+  `);
+
+  janela.document.close();
+}
+
+
+function imprimirRelatorio(){
+
+  const data = $("rData").value;
+  const atividades = $("rAtividades").value;
+
+  if(!atividades.trim()){
+    alert("Digite as atividades realizadas.");
+    return;
+  }
+
+  const janela = window.open("", "_blank");
+
+  janela.document.write(`
+
+  <html>
+  <head>
+  <title>Relatório Diário SST</title>
+
+  <style>
+  body{
+    font-family:Arial;
+    padding:35px;
+    line-height:1.6;
+  }
+  h1{text-align:center}
+  </style>
+
+  </head>
+
+  <body>
+
+  <h1>RELATÓRIO DIÁRIO DE ATIVIDADES</h1>
+
+  <p>
+  <strong>Data:</strong> ${data}
+  </p>
+
+  <h2>Atividades realizadas</h2>
+
+  <p>${atividades.replace(/\n/g,"<br>")}</p>
+
+  <br><br>
+
+  ___________________________________________<br>
+  Técnico de Segurança do Trabalho
+
+  <script>
+  window.onload=function(){
+    window.print();
+  }
+  <\/script>
+
+  </body>
+  </html>
+
+  `);
+
+  janela.document.close();
+}
+
+
+function backup(){
+
+  const dados = JSON.stringify(db,null,2);
+
+  const blob = new Blob(
+    [dados],
+    {type:"application/json"}
+  );
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download =
+    "backup-app-sst-prefeitura-2-" +
+    hoje() +
+    ".json";
+
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+
+atualizarPainel();
+atualizarListas();
+
+</script>
+
+</body>
+</html>
